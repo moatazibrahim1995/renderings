@@ -1,72 +1,672 @@
-<!DOCTYPE html>
-<html>
-
+<!doctype html>
+<html lang="en">
 <head>
-    <title>Visualize - Interactive Image</title>
-
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
-    <meta name="viewport" content="width=1024, maximum-scale=1.2" />
-
-    <!-- To embed into another site, include the following scripts -->
-    <!-- You may want to minify them for production environments -->
-    <script src="js/prototype.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/browserdetect.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/apple_core.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/vr.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/library.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/threesixty.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/wheelzoom.js" type="text/javascript"></script>
-    <script src="js/observers.js" type="text/javascript" defer></script>
-
-    <!-- The following are not required for embedding -->
-    <script src="js/viewer.js" type="text/javascript" charset="utf-8" defer></script>
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Community Venues — Find & List Event Spaces Near You</title>
+  <meta name="description" content="Browse event-ready community halls, studios, and unique venues. List your space for free. Simple booking, clear pricing, trusted reviews." />
+  <meta property="og:title" content="Community Venues — Find & List Event Spaces Near You" />
+  <meta property="og:description" content="Browse event-ready community halls, studios, and unique venues. List your space for free. Simple booking, clear pricing, trusted reviews." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://your-domain.github.io/" />
+  <meta name="theme-color" content="#0f1b2d" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230f1b2d'/%3E%3Cpath d='M20 40h24l-12-20z' fill='%23ffd166'/%3E%3C/svg%3E" />
+  <style>
+    :root{
+      --bg:#0f1b2d;          /* deep navy */
+      --fg:#ffffff;          /* white */
+      --muted:#95a3b3;       /* slate */
+      --brand:#ffd166;       /* gold */
+      --accent:#ef476f;      /* red accent */
+      --card:#15233a;        /* darker navy */
+      --ok:#06d6a0;          /* green */
+      --warn:#ef476f;        /* red */
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif}
+    a{color:var(--brand);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;background:rgba(15,27,45,.9);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.06);z-index:10}
+    .nav{display:flex;align-items:center;gap:18px}
+    .nav a{padding:10px 12px;border-radius:10px}
+    .nav a.active{background:rgba(255,255,255,.06)}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
+    .brand .dot{width:14px;height:14px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px rgba(255,209,102,.15)}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;background:var(--brand);color:#111;font-weight:700;border:0;cursor:pointer;box-shadow:var(--shadow)}
+    .btn.secondary{background:#233249;color:#fff}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.12);color:#fff}
+    .grid{display:grid;gap:18px}
+    @media(min-width:860px){.grid.cols-3{grid-template-columns:repeat(3,1fr)}.grid.cols-2{grid-template-columns:repeat(2,1fr)}}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+    .card img{width:100%;height:200px;object-fit:cover;display:block}
+    .card .pad{padding:16px}
+    .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:6px 10px;border-radius:999px;color:#fff;font-size:12px}
+    .muted{color:var(--muted)}
+    .hero{display:grid;gap:20px;padding:48px 0}
+    @media(min-width:860px){.hero{grid-template-columns:1.2fr .8fr;align-items:center}}
+    .hero .callout{background:linear-gradient(165deg,rgba(255,209,102,.12),rgba(255,255,255,0));border:1px solid rgba(255,255,255,.08);padding:22px;border-radius:16px}
+    input,select,textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff}
+    label{display:block;margin:10px 0 6px;color:#d0d7e2;font-size:14px}
+    .row{display:grid;gap:14px}
+    @media(min-width:700px){.row.two{grid-template-columns:1fr 1fr}.row.three{grid-template-columns:repeat(3,1fr)}}
+    .badge{display:inline-block;padding:4px 8px;border-radius:8px;background:#1f2d47;border:1px solid rgba(255,255,255,.1);font-size:12px;color:#c9d6e5}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{padding:12px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+    footer{border-top:1px solid rgba(255,255,255,.08);margin-top:48px;padding:28px 0;color:#c4cfde}
+    .sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+    .chip{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border-radius:999px;background:#1a2a44;border:1px solid rgba(255,255,255,.08);font-size:12px}
+    .notice{background:#162843;border:1px solid rgba(255,255,255,.08);padding:14px;border-radius:12px}
+    .kicker{letter-spacing:.22em;text-transform:uppercase;color:#9fb1c7;font-weight:700;font-size:12px}
+    .h1{font-size:38px;line-height:1.1;margin:6px 0 10px}
+    .h2{font-size:26px;line-height:1.2;margin:6px 0 10px}
+    .h3{font-size:20px;margin:4px 0 6px}
+    .spacer{height:20px}
+    .gallery{display:grid;gap:10px;grid-template-columns:2fr 1fr 1fr}
+    .gallery img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+    .filters{display:grid;gap:10px;margin:14px 0}
+    @media(min-width:860px){.filters{grid-template-columns:repeat(6,1fr)}}
+    .cta{display:flex;gap:12px;flex-wrap:wrap}
+    .hidden{display:none}
+    .tagcloud a{margin-right:10px}
+    .star{color:var(--brand)}
+    code.inline{background:#1a2a44;border:1px solid rgba(255,255,255,.1);padding:2px 6px;border-radius:6px}
+  </style>
+  <!-- JSON-LD baseline schema for the website; per-view schemas injected by router -->
+  <script type="application/ld+json" id="ld-website">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Community Venues",
+    "url": "https://your-domain.github.io/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://your-domain.github.io/#/browse?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
 </head>
-
 <body>
-    <header>
-        <span class="project-name">Viewing New Project</span>
-        <div class="push">
-            <button title="Actual" id="btn-actual" class="svg-button">
-                <!-- icon_viewer_min_screen-dark-24px -->
-                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-                    y="0px" viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve">
-                    <g id="icon_x5F_viewer_x5F_min_x5F_screen">
-                        <path style="fill:#2C2C2C;" d="M15.5,16h-7C8.224,16,8,
-                        15.776,8,15.5v-7C8,8.224,8.224,8,8.5,8h7C15.776,8,16,
-                        8.224,16,8.5v7C16,15.776,15.776,16,15.5,16z M1,6h5V1L1,
-                        6z M18,1v5h5L18,1z M23,18h-5v5L23,18z M6,23v-5H1L6,23z" />
-                    </g>
-                    <g id="Layer_1">
-                    </g>
-                </svg>
-            </button>
-            <button title="Fit" id="btn-fit" class="svg-button">
-                <!-- icon_viewer_full_screen-dark-24px.svg -->
-                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-                    y="0px" viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve">
-                    <g id="icon_x5F_viewer_x5F_full_x5F_screen">
-                        <path style="fill:#2C2C2C;" d="M17.5,18h-11C6.224,18,6,
-                        17.776,6,17.5v-11C6,6.224,6.224,6,6.5,6h11C17.776,6,18,
-                        6.224,18,6.5v11C18,17.776,17.776,18,17.5,18z M6,1H1v5L6,
-                        1z M23,6V1h-5L23,6z M18,23h5v-5L18,23z M1,18v5h5L1,18z" />
-                    </g>
-                    <g id="Layer_1">
-                    </g>
-                </svg>
-            </button>
-        </div>
-    </header>
-    <main>
-        <section id="threesixty" class="container">
-            <div id="threesixty-main">
-                <!-- To embed into another site, include the viewer element -->
-                <div id="viewer"></div>
-        </section>
-        </div>
-    </main>
-</body>
+  <header>
+    <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:14px;">
+      <a href="#/" class="brand" aria-label="Community Venues Home">
+        <span class="dot"></span>
+        <span>Community Venues</span>
+      </a>
+      <nav class="nav" aria-label="Main">
+        <a href="#/browse" data-nav>Browse Venues</a>
+        <a href="#/how-it-works" data-nav>How It Works</a>
+        <a href="#/fees" data-nav>Pricing</a>
+        <a href="#/protection" data-nav>Protection</a>
+        <a href="#/resources" data-nav>Resources</a>
+        <a href="#/list" class="btn" style="padding:10px 14px">List Your Space</a>
+        <a href="#/signin" class="btn secondary" style="padding:10px 14px">Sign In</a>
+      </nav>
+    </div>
+  </header>
 
+  <main id="app" class="container" aria-live="polite"></main>
+
+  <footer>
+    <div class="container">
+      <div class="grid cols-3">
+        <div>
+          <div class="brand"><span class="dot"></span><span>Community Venues</span></div>
+          <p class="muted">Find event-ready halls, studios, and unique spaces across Nova Scotia. Free to list; simple booking; insured & reviewed.</p>
+          <p class="muted">© <span id="year"></span> Community Venues</p>
+        </div>
+        <div>
+          <div class="h3">Cities</div>
+          <div class="tagcloud">
+            <a href="#/browse?city=Halifax">Halifax</a>
+            <a href="#/browse?city=Dartmouth">Dartmouth</a>
+            <a href="#/browse?city=Truro">Truro</a>
+            <a href="#/browse?city=Sydney">Sydney</a>
+          </div>
+        </div>
+        <div>
+          <div class="h3">Event Types</div>
+          <div class="tagcloud">
+            <a href="#/browse?type=Party">Parties</a>
+            <a href="#/browse?type=Workshop">Workshops</a>
+            <a href="#/browse?type=Meeting">Meetings</a>
+            <a href="#/browse?type=Wedding">Weddings</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- Demo data (seed listings) --- //
+    const seedListings = [
+      {
+        id: 'halifax-hall-a',
+        title: 'North End Community Hall',
+        city: 'Halifax',
+        neighborhood: 'North End',
+        types: ['Party','Meeting','Workshop'],
+        capacity: 120,
+        pricePerHour: 85,
+        minHours: 2,
+        rating: 4.8,
+        reviews: 46,
+        images: [
+          'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?q=80&w=1200&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1523580846011-4d4a86dd8d93?q=80&w=1200&auto=format&fit=crop'
+        ],
+        amenities: ['Kitchen','Projector','Accessible','Parking'],
+        rules: ['No smoking','Finish by 11pm','Respect neighbors'],
+        host: { name: 'City of Halifax', responseTime: '1 hr avg' },
+        description: 'Bright, flexible hall perfect for community events. Tables/chairs included. Close to transit.',
+        latitude: 44.66, longitude: -63.58,
+        calendar: { available: ['2025-09-20','2025-09-27','2025-10-04'] }
+      },
+      {
+        id: 'dartmouth-studio-b',
+        title: 'Harbourfront Workshop Studio',
+        city: 'Dartmouth',
+        neighborhood: 'Downtown',
+        types: ['Workshop','Meeting','Party'],
+        capacity: 40,
+        pricePerHour: 55,
+        minHours: 3,
+        rating: 4.6,
+        reviews: 22,
+        images: [
+          'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1503424886300-4f83e63d1101?q=80&w=1200&auto=format&fit=crop'
+        ],
+        amenities: ['Whiteboards','Wi‑Fi','Coffee','Accessible'],
+        rules: ['No open flames','Restore layout after use'],
+        host: { name: 'Harbour Collective', responseTime: '2 hrs avg' },
+        description: 'Modern studio for hands-on workshops or meetups. Waterfront views.',
+        latitude: 44.67, longitude: -63.56,
+        calendar: { available: ['2025-09-19','2025-09-26','2025-10-03'] }
+      },
+      {
+        id: 'truro-hall-c',
+        title: 'Riverside Heritage Hall',
+        city: 'Truro',
+        neighborhood: 'Riverside',
+        types: ['Wedding','Party','Meeting'],
+        capacity: 180,
+        pricePerHour: 110,
+        minHours: 4,
+        rating: 4.9,
+        reviews: 61,
+        images: [
+          'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1453831362806-3d5577f014a4?q=80&w=1200&auto=format&fit=crop'
+        ],
+        amenities: ['Stage','PA System','Kitchen','Parking'],
+        rules: ['Licensed caterers only','Security after 9pm'],
+        host: { name: 'Riverside Assoc.', responseTime: '3 hrs avg' },
+        description: 'Charming hall with stage and full kitchen—ideal for receptions and community galas.',
+        latitude: 45.36, longitude: -63.29,
+        calendar: { available: ['2025-09-21','2025-09-28','2025-10-05'] }
+      }
+    ];
+
+    // Simple state
+    const state = {
+      listings: JSON.parse(localStorage.getItem('cv_listings')||'null') || seedListings,
+      route: window.location.hash || '#/'
+    };
+    const $app = document.getElementById('app');
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function setRoute(hash){
+      state.route = hash || '#/'
+      window.location.hash = state.route
+      render();
+      highlightNav();
+    }
+
+    function highlightNav(){
+      document.querySelectorAll('[data-nav]').forEach(a=>{
+        const path = a.getAttribute('href').slice(1);
+        a.classList.toggle('active', state.route.startsWith(path));
+      })
+    }
+
+    // Utilities
+    const fmt = new Intl.NumberFormat('en-CA',{style:'currency',currency:'CAD',maximumFractionDigits:0});
+
+    function getQuery(){
+      const [, pathWithQ] = state.route.split('#');
+      const [path, qs] = pathWithQ.split('?');
+      const params = new URLSearchParams(qs||'');
+      return { path, params };
+    }
+
+    // Components
+    function ListingCard(l){
+      return `
+      <article class="card" aria-label="${l.title}">
+        <a href="#/venue/${l.id}"><img src="${l.images[0]}" alt="${l.title} photo" /></a>
+        <div class="pad">
+          <div class="h3" style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+            <a href="#/venue/${l.id}">${l.title}</a>
+            <span class="chip"><span class="star">★</span>${l.rating} <span class="muted">(${l.reviews})</span></span>
+          </div>
+          <div class="muted">${l.city} • ${l.neighborhood} • up to ${l.capacity} guests</div>
+          <div class="spacer"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>${fmt.format(l.pricePerHour)}</strong> <span class="muted">/hour · ${l.minHours}h min</span></div>
+            <a class="btn ghost" href="#/venue/${l.id}">View</a>
+          </div>
+        </div>
+      </article>`
+    }
+
+    function Home(){
+      return `
+      <section class="hero">
+        <div>
+          <div class="kicker">Find a space</div>
+          <h1 class="h1">Find event‑ready spaces near you</h1>
+          <p class="muted">Community halls, studios, and unique venues—booked by the hour, verified for your event.</p>
+          <div class="spacer"></div>
+          <form onsubmit="return false" class="row two" aria-label="Search venues">
+            <label>
+              <span class="sr-only">City</span>
+              <input id="home-city" placeholder="City (e.g., Halifax)" />
+            </label>
+            <label>
+              <span class="sr-only">Event type</span>
+              <select id="home-type">
+                <option value="">Event type</option>
+                <option>Party</option>
+                <option>Workshop</option>
+                <option>Meeting</option>
+                <option>Wedding</option>
+              </select>
+            </label>
+            <div class="cta">
+              <button class="btn" onclick="goBrowse()">Browse venues</button>
+              <a class="btn secondary" href="#/list">List your space</a>
+            </div>
+          </form>
+          <div class="spacer"></div>
+          <div class="callout">
+            <strong>Free to list.</strong> You set the price & rules. Get paid fast after each event. Protection options available.
+          </div>
+        </div>
+        <div>
+          <div class="gallery">
+            <img alt="Venue photo" src="${state.listings[0].images[0]}">
+            <img alt="Venue photo" src="${state.listings[1].images[0]}">
+            <img alt="Venue photo" src="${state.listings[2].images[0]}">
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="h2">Popular near you</div>
+        <div class="grid cols-3">${state.listings.map(ListingCard).join('')}</div>
+      </section>
+
+      <section>
+        <div class="h2">How it works</div>
+        <div class="grid cols-3">
+          <div class="card"><div class="pad"><div class="h3">1) Browse & filter</div><p class="muted">Search by city, event type, capacity, price, amenities, and availability.</p></div></div>
+          <div class="card"><div class="pad"><div class="h3">2) Request & chat</div><p class="muted">Send a request, ask questions, and confirm the details with the host.</p></div></div>
+          <div class="card"><div class="pad"><div class="h3">3) Book securely</div><p class="muted">Clear fees, protection options, payouts after the event.</p></div></div>
+        </div>
+      </section>`
+    }
+
+    window.goBrowse = function(){
+      const city = document.getElementById('home-city').value.trim();
+      const type = document.getElementById('home-type').value.trim();
+      const params = new URLSearchParams();
+      if(city) params.set('city', city);
+      if(type) params.set('type', type);
+      setRoute('#/browse' + (params.toString()? ('?'+params.toString()):''));
+    }
+
+    function Browse(){
+      const { params } = getQuery();
+      const q = (params.get('q')||'').toLowerCase();
+      const city = (params.get('city')||'').toLowerCase();
+      const type = (params.get('type')||'').toLowerCase();
+      const max = parseInt(params.get('max')||'0',10);
+      const minCap = parseInt(params.get('minCap')||'0',10);
+
+      let results = state.listings.filter(l =>
+        (!q || l.title.toLowerCase().includes(q) || l.neighborhood.toLowerCase().includes(q)) &&
+        (!city || l.city.toLowerCase() === city) &&
+        (!type || l.types.map(t=>t.toLowerCase()).includes(type)) &&
+        (!max || l.pricePerHour <= max) &&
+        (!minCap || l.capacity >= minCap)
+      );
+
+      const count = results.length;
+
+      return `
+      <section>
+        <div style="display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap">
+          <div>
+            <div class="kicker">Browse</div>
+            <h1 class="h1">Find event‑ready spaces</h1>
+            <div class="muted">${count} result${count!==1?'s':''}${city?` • in ${params.get('city')}`:''}${type?` • type: ${params.get('type')}`:''}</div>
+          </div>
+          <a class="btn" href="#/list">List your space</a>
+        </div>
+
+        <div class="filters">
+          <input placeholder="Search keywords" value="${params.get('q')||''}" oninput="setSearchParam('q',this.value)" />
+          <input placeholder="City" value="${params.get('city')||''}" oninput="setSearchParam('city',this.value)" />
+          <select onchange="setSearchParam('type',this.value)">
+            <option value="">Any type</option>
+            ${['Party','Workshop','Meeting','Wedding'].map(t=>`<option ${params.get('type')===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+          <input type="number" min="0" placeholder="Max $/hr" value="${params.get('max')||''}" oninput="setSearchParam('max',this.value)" />
+          <input type="number" min="0" placeholder="Min capacity" value="${params.get('minCap')||''}" oninput="setSearchParam('minCap',this.value)" />
+          <button class="btn ghost" onclick="clearFilters()">Clear</button>
+        </div>
+
+        <div class="grid cols-3">${results.map(ListingCard).join('')}</div>
+      </section>`
+    }
+
+    window.setSearchParam = function(k,v){
+      const { params } = getQuery();
+      if(v) params.set(k,v); else params.delete(k);
+      setRoute('#/browse?'+params.toString());
+    }
+    window.clearFilters = function(){ setRoute('#/browse'); }
+
+    function Venue(id){
+      const l = state.listings.find(x=>x.id===id);
+      if(!l){ return `<p class="notice">Venue not found.</p>` }
+
+      // Inject per-venue JSON-LD
+      const ld = {
+        "@context":"https://schema.org",
+        "@type":"EventVenue",
+        "name": l.title,
+        "address": {"@type":"PostalAddress","addressLocality": l.city, "streetAddress": l.neighborhood},
+        "aggregateRating": {"@type":"AggregateRating","ratingValue": l.rating, "reviewCount": l.reviews},
+        "maximumAttendeeCapacity": l.capacity,
+        "amenityFeature": l.amenities?.map(a=>({"@type":"LocationFeatureSpecification","name":a}))||[],
+        "geo": {"@type":"GeoCoordinates","latitude": l.latitude, "longitude": l.longitude},
+        "offers": {"@type":"Offer","price": l.pricePerHour, "priceCurrency":"CAD"}
+      };
+      setLD(ld);
+
+      return `
+      <article>
+        <a class="pill" href="#/browse">← Back to results</a>
+        <h1 class="h1">${l.title}</h1>
+        <div class="muted">${l.city} • ${l.neighborhood} • up to ${l.capacity} guests</div>
+        <div class="spacer"></div>
+        <div class="grid cols-2">
+          <div>
+            <img src="${l.images[0]}" alt="${l.title} main photo" style="width:100%;height:420px;object-fit:cover;border-radius:16px" />
+            <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px">
+              ${l.images.slice(1).map(src=>`<img src='${src}' alt='${l.title} photo' style='width:100%;height:120px;object-fit:cover;border-radius:12px'/>`).join('')}
+            </div>
+            <div class="spacer"></div>
+            <div class="h2">About</div>
+            <p class="muted">${l.description}</p>
+            <div class="h3">Amenities</div>
+            <p>${l.amenities.map(a=>`<span class='chip'>${a}</span>`).join(' ')}</p>
+            <div class="h3">House rules</div>
+            <ul>${l.rules.map(r=>`<li>${r}</li>`).join('')}</ul>
+          </div>
+          <aside>
+            <div class="card"><div class="pad">
+              <div class="h2" style="display:flex;justify-content:space-between;align-items:center"><span>${fmt.format(l.pricePerHour)}</span><span class="chip">${l.minHours}h min</span></div>
+              <div class="muted">${l.types.join(' · ')}</div>
+              <div class="spacer"></div>
+              <form onsubmit="event.preventDefault(); submitRequest('${l.id}')" aria-label="Request to book">
+                <label>Event date<input type="date" id="rq-date"></label>
+                <label>Start time<input type="time" id="rq-start"></label>
+                <label>Hours needed<input type="number" min="${l.minHours}" value="${l.minHours}" id="rq-hours"></label>
+                <label>Guests<input type="number" min="1" max="${l.capacity}" value="20" id="rq-guests"></label>
+                <label>Message<textarea id="rq-msg" rows="3" placeholder="Tell the host about your event"></textarea></label>
+                <button class="btn" type="submit">Request to book</button>
+              </form>
+              <div class="spacer"></div>
+              <div class="notice"><strong>Protection:</strong> COI required for certain events. Learn more on <a href="#/protection">Protection</a>.</div>
+              <div class="spacer"></div>
+              <div><span class="muted">Host</span><div class="h3">${l.host.name}</div><div class="muted">Response time: ${l.host.responseTime}</div></div>
+            </div></div>
+            <div class="card" style="margin-top:12px"><div class="pad">
+              <div class="h3">Availability</div>
+              <p class="muted">Upcoming available dates:</p>
+              <p>${l.calendar.available.map(d=>`<span class='badge'>${d}</span>`).join(' ')}</p>
+            </div></div>
+          </aside>
+        </div>
+      </article>`
+    }
+
+    window.submitRequest = function(id){
+      alert('Thanks! Your request was sent to the host. (Demo)');
+    }
+
+    function ListYourSpace(){
+      setLD();
+      return `
+      <section class="grid cols-2">
+        <div>
+          <div class="kicker">Hosts</div>
+          <h1 class="h1">List your space (free)</h1>
+          <p class="muted">Create a verified listing in minutes. You set the price, rules, and availability. Payouts after each event.</p>
+          <div class="spacer"></div>
+          <ul>
+            <li>Free to list • Commission on successful bookings</li>
+            <li>Calendar sync • Messaging • Reviews</li>
+            <li>COI/Protection options for peace of mind</li>
+          </ul>
+          <div class="spacer"></div>
+          <div class="notice">This is a functional demo. Submissions are saved locally in your browser so you can preview the flow.</div>
+        </div>
+        <div>
+          <form onsubmit="event.preventDefault(); saveListing()" aria-label="Create listing">
+            <div class="row two">
+              <label>Title<input id="f-title" placeholder="e.g., West End Community Hall" required></label>
+              <label>City<input id="f-city" placeholder="e.g., Halifax" required></label>
+            </div>
+            <div class="row two">
+              <label>Neighborhood<input id="f-hood" placeholder="e.g., West End"></label>
+              <label>Capacity<input id="f-cap" type="number" min="1" required></label>
+            </div>
+            <div class="row two">
+              <label>Price per hour (CAD)<input id="f-price" type="number" min="1" required></label>
+              <label>Minimum hours<input id="f-min" type="number" min="1" value="2" required></label>
+            </div>
+            <label>Event types
+              <select id="f-types" multiple>
+                <option>Party</option>
+                <option>Workshop</option>
+                <option>Meeting</option>
+                <option>Wedding</option>
+              </select>
+            </label>
+            <label>Images (comma‑separated URLs)<input id="f-imgs" placeholder="https://... , https://..."></label>
+            <label>Amenities (comma‑separated)<input id="f-amen" placeholder="Kitchen, Projector, Parking"></label>
+            <label>Rules (comma‑separated)<input id="f-rules" placeholder="No smoking, End by 11pm"></label>
+            <label>Description<textarea id="f-desc" rows="4" placeholder="Describe your space"></textarea></label>
+            <div class="row two">
+              <label>Latitude<input id="f-lat" type="number" step="0.0001" placeholder="44.65"></label>
+              <label>Longitude<input id="f-lng" type="number" step="0.0001" placeholder="-63.58"></label>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn" type="submit">Publish listing</button>
+          </form>
+        </div>
+      </section>`
+    }
+
+    window.saveListing = function(){
+      const id = (document.getElementById('f-title').value||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+      const l = {
+        id,
+        title: document.getElementById('f-title').value,
+        city: document.getElementById('f-city').value,
+        neighborhood: document.getElementById('f-hood').value,
+        capacity: parseInt(document.getElementById('f-cap').value||'0',10),
+        pricePerHour: parseInt(document.getElementById('f-price').value||'0',10),
+        minHours: parseInt(document.getElementById('f-min').value||'1',10),
+        types: Array.from(document.getElementById('f-types').selectedOptions).map(o=>o.value),
+        images: (document.getElementById('f-imgs').value||'').split(',').map(s=>s.trim()).filter(Boolean),
+        amenities: (document.getElementById('f-amen').value||'').split(',').map(s=>s.trim()).filter(Boolean),
+        rules: (document.getElementById('f-rules').value||'').split(',').map(s=>s.trim()).filter(Boolean),
+        description: document.getElementById('f-desc').value,
+        host: { name: 'Host (pending verify)', responseTime: '—' },
+        rating: 0, reviews: 0,
+        latitude: parseFloat(document.getElementById('f-lat').value||'0'),
+        longitude: parseFloat(document.getElementById('f-lng').value||'0'),
+        calendar: { available: [] }
+      };
+      state.listings = [l, ...state.listings];
+      localStorage.setItem('cv_listings', JSON.stringify(state.listings));
+      alert('Listing published (demo). Redirecting to your page…');
+      setRoute('#/venue/'+l.id);
+    }
+
+    function HowItWorks(){
+      setLD();
+      return `
+      <section>
+        <div class="kicker">Process</div>
+        <h1 class="h1">How it works</h1>
+        <div class="grid cols-3">
+          <div class="card"><div class="pad"><div class="h3">Browse & filter</div><p class="muted">Find spaces by city, type, capacity, price, amenities, and availability.</p></div></div>
+          <div class="card"><div class="pad"><div class="h3">Request & chat</div><p class="muted">Message hosts, align on logistics and rules, and confirm the fit.</p></div></div>
+          <div class="card"><div class="pad"><div class="h3">Book securely</div><p class="muted">Clear pricing and fees. Payouts after the event. Reviews build trust.</p></div></div>
+        </div>
+        <div class="spacer"></div>
+        <a class="btn" href="#/browse">Start browsing</a>
+      </section>`
+    }
+
+    function Fees(){
+      setLD();
+      return `
+      <section>
+        <div class="kicker">Pricing</div>
+        <h1 class="h1">Simple, transparent fees</h1>
+        <p class="muted">Free to list. Commission on successful bookings keeps us aligned with your success.</p>
+        <div class="spacer"></div>
+        <table class="table">
+          <tr><th>Role</th><th>Fee</th><th>Notes</th></tr>
+          <tr><td>Host</td><td>12% commission</td><td>Deducted from payout after a completed booking.</td></tr>
+          <tr><td>Guest</td><td>6% service fee</td><td>Shown at checkout. Helps with operations and support.</td></tr>
+          <tr><td>Protection (optional)</td><td>From 2%</td><td>Event COI / damage waiver options depending on event type.</td></tr>
+        </table>
+        <div class="spacer"></div>
+        <div class="notice">Exact percentages are placeholders for demo. Adjust to your final model.</div>
+      </section>`
+    }
+
+    function Protection(){
+      setLD();
+      return `
+      <section>
+        <div class="kicker">Trust</div>
+        <h1 class="h1">Protection & COI</h1>
+        <p class="muted">We require a Certificate of Insurance (COI) or a damage waiver for certain event types. Hosts may add house rules and deposits.</p>
+        <div class="grid cols-3" style="margin-top:12px">
+          <div class="card"><div class="pad"><div class="h3">COI</div><p class="muted">Submit a third‑party event insurance COI naming the host/venue as additional insured.</p></div></div>
+          <div class="card"><div class="pad"><div class="h3">Damage waiver</div><p class="muted">For low‑risk events, opt for a waiver in lieu of COI (host discretion).</p></div></div>
+          <div class="card"><div class="pad"><div class="h3">ID & reviews</div><p class="muted">Verified accounts and reviews reduce risk and improve response times.</p></div></div>
+        </div>
+        <div class="spacer"></div>
+        <a class="btn ghost" href="#/resources/insurance-guide">Read the insurance guide</a>
+      </section>`
+    }
+
+    function Resources(){
+      setLD();
+      return `
+      <section>
+        <div class="kicker">Guides</div>
+        <h1 class="h1">Resources for hosts & organizers</h1>
+        <div class="grid cols-2">
+          <a class="card" href="#/resources/halifax-party-venues"><div class="pad"><div class="h3">Best party venues in Halifax (2025)</div><p class="muted">Curated picks by capacity, price, and neighborhood.</p></div></a>
+          <a class="card" href="#/resources/cost-to-rent-hall-halifax"><div class="pad"><div class="h3">How much does it cost to rent a hall in Halifax?</div><p class="muted">Price ranges by size and amenities, with tips to save.</p></div></a>
+          <a class="card" href="#/resources/host-playbook"><div class="pad"><div class="h3">Host playbook: photos, pricing & rules that convert</div><p class="muted">A checklist to make your listing stand out.</p></div></a>
+          <a class="card" href="#/resources/insurance-guide"><div class="pad"><div class="h3">Event insurance & COI guide</div><p class="muted">When to use a COI vs. a damage waiver.</p></div></a>
+        </div>
+      </section>`
+    }
+
+    function ResourcePage(slug){
+      setLD();
+      const m = {
+        'halifax-party-venues': {
+          title: 'Best party venues in Halifax (2025)',
+          body: `<p class="muted">This is a demo long‑form guide. Replace with real content and venue links. Include internal links to relevant listings.</p>`
+        },
+        'cost-to-rent-hall-halifax': {
+          title: 'How much does it cost to rent a hall in Halifax?',
+          body: `<p class="muted">Typical small halls: ${fmt.format(40)}–${fmt.format(70)}/hr. Mid‑size: ${fmt.format(80)}–${fmt.format(120)}/hr. Large: ${fmt.format(130)}+/hr. Add cleaning, overtime, and COI if applicable.</p>`
+        },
+        'host-playbook': {
+          title: 'Host playbook: photos, pricing & rules that convert',
+          body: `<ul><li>Upload 5–10 bright photos (landscape)</li><li>Use capacity chart (seated vs standing)</li><li>Price by use‑case if needed</li><li>State clear rules and quiet hours</li></ul>`
+        },
+        'insurance-guide': {
+          title: 'Event insurance & COI guide',
+          body: `<p class="muted">Most formal events should carry a COI naming the host/venue as additional insured. Low‑risk meetups may use a damage waiver (host discretion).</p>`
+        }
+      };
+      const page = m[slug];
+      if(!page) return `<p class="notice">Guide not found.</p>`;
+      return `<article><a class="pill" href="#/resources">← Back to resources</a><h1 class="h1">${page.title}</h1>${page.body}</article>`
+    }
+
+    function SignIn(){
+      setLD();
+      return `<section><h1 class="h1">Sign in</h1><p class="muted">Demo page. Connect your auth provider when you move beyond static hosting.</p><div class="row two"><label>Email<input placeholder="you@example.com"></label><label>Password<input type="password"></label></div><div class="spacer"></div><button class="btn">Sign in</button></section>`
+    }
+
+    // Router
+    function render(){
+      const { path } = getQuery();
+      const segs = path.split('/').filter(Boolean); // [ '', 'browse' ]
+      let html = '';
+      if(segs.length===0){ html = Home(); }
+      else if(segs[0]==='browse'){ html = Browse(); }
+      else if(segs[0]==='venue' && segs[1]){ html = Venue(segs[1]); }
+      else if(segs[0]==='list'){ html = ListYourSpace(); }
+      else if(segs[0]==='how-it-works'){ html = HowItWorks(); }
+      else if(segs[0]==='fees'){ html = Fees(); }
+      else if(segs[0]==='protection'){ html = Protection(); }
+      else if(segs[0]==='resources' && !segs[1]){ html = Resources(); }
+      else if(segs[0]==='resources' && segs[1]){ html = ResourcePage(segs[1]); }
+      else if(segs[0]==='signin'){ html = SignIn(); }
+      else { html = `<p class="notice">Page not found.</p>` }
+      $app.innerHTML = html;
+    }
+
+    function setLD(obj){
+      // Reset to baseline or set specific structured data block
+      const base = document.getElementById('ld-website');
+      // remove any custom blocks
+      document.querySelectorAll('script[data-dynamic-ld]').forEach(n=>n.remove());
+      if(!obj) return; // keep only baseline
+      const el = document.createElement('script');
+      el.type = 'application/ld+json';
+      el.setAttribute('data-dynamic-ld','');
+      el.textContent = JSON.stringify(obj);
+      document.head.appendChild(el);
+    }
+
+    window.addEventListener('hashchange', ()=>{ state.route = window.location.hash || '#/'; render(); highlightNav(); });
+    render();
+    highlightNav();
+  </script>
+</body>
 </html>
